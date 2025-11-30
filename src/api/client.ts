@@ -32,6 +32,14 @@ export async function getDailyChallenge() {
   return apiRequest("/v3/challenges/daily-challenges/today");
 }
 
+export async function getMyDailyChallengeScore() {
+  return apiRequest("/v3/challenges/daily-challenges/me");
+}
+
 export async function getFeed(count = 10, page = 0) {
   return apiRequest(`/v4/feed/private?count=${count}&page=${page}`);
+}
+
+export async function getPreviousDailyChallenge() {
+  return apiRequest("/v3/challenges/daily-challenges/previous");
 }

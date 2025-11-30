@@ -20,6 +20,13 @@
       "subtitle": "Check your geoguesser stats",
       "description": "Show you your current profile including stats",
       "mode": "view"
+    },
+    {
+      "name": "daily-challenge",
+      "title": "Daily Challenge",
+      "subtitle": "View today's daily challenge",
+      "description": "Show today's GeoGuessr daily mission",
+      "mode": "view"
     }
   ],
   "preferences": [

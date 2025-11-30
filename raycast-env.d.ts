@@ -18,10 +18,14 @@ declare type Preferences = ExtensionPreferences
 declare namespace Preferences {
   /** Preferences accessible in the `get-profile` command */
   export type GetProfile = ExtensionPreferences & {}
+  /** Preferences accessible in the `daily-challenge` command */
+  export type DailyChallenge = ExtensionPreferences & {}
 }
 
 declare namespace Arguments {
   /** Arguments passed to the `get-profile` command */
   export type GetProfile = {}
+  /** Arguments passed to the `daily-challenge` command */
+  export type DailyChallenge = {}
 }
 

@@ -120,3 +120,47 @@ export interface EmailNotificationSettings {
   sendCompetitiveNotifications: boolean;
   unsubscribeToken: string | null;
 }
+
+export interface DailyChallengeResponse {
+  token: string;
+  date: string;
+  description: string | null;
+  participants: number;
+  leaderboard: LeaderboardEntry[];
+  authorCreator: {
+    id: string;
+    name: string;
+    avatarImage: string;
+  };
+  pickedWinner: boolean;
+  friends: any;
+  country: any[];
+}
+
+export interface LeaderboardEntry {
+  id: string;
+  nick: string;
+  pinUrl: string;
+  totalScore: number;
+  totalTime: number;
+  totalDistance: number;
+  countryCode: string;
+  currentStreak: number;
+  isVerified: boolean;
+  flair: number;
+}
+
+export interface MyDailyChallengeScore {
+  id: string;
+  nick: string;
+  pinUrl: string;
+  totalScore: number;
+  totalTime: number;
+  totalDistance: number;
+  isOnLeaderboard: boolean;
+  isVerified: boolean;
+  flair: number;
+  countryCode: string;
+  currentStreak: number;
+  totalStepsCount: number | null;
+}
