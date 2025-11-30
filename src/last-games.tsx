@@ -9,7 +9,7 @@ interface ParsedGame {
   title: string;
   subtitle: string;
   url: string;
-  token: string; // Added for fetching details
+  token: string;
   points?: number;
   icon: string;
   iconTint: Color;
@@ -62,7 +62,6 @@ export default function LastGamesCommand() {
   );
 }
 
-// NEW COMPONENT: Game Detail View
 function GameDetailView({ game }: { game: ParsedGame }) {
   const [details, setDetails] = useState<GameDetails | null>(null);
   const [isLoading, setIsLoading] = useState(true);
