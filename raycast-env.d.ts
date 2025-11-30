@@ -20,6 +20,8 @@ declare namespace Preferences {
   export type GetProfile = ExtensionPreferences & {}
   /** Preferences accessible in the `daily-challenge` command */
   export type DailyChallenge = ExtensionPreferences & {}
+  /** Preferences accessible in the `last-games` command */
+  export type LastGames = ExtensionPreferences & {}
 }
 
 declare namespace Arguments {
@@ -27,5 +29,7 @@ declare namespace Arguments {
   export type GetProfile = {}
   /** Arguments passed to the `daily-challenge` command */
   export type DailyChallenge = {}
+  /** Arguments passed to the `last-games` command */
+  export type LastGames = {}
 }
 

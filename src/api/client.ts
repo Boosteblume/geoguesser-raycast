@@ -1,4 +1,5 @@
 import { getPreferences } from "../preferences";
+import { FeedResponse } from "../types";
 
 const BASE_URL = "https://www.geoguessr.com/api";
 
@@ -42,4 +43,16 @@ export async function getFeed(count = 10, page = 0) {
 
 export async function getPreviousDailyChallenge() {
   return apiRequest("/v3/challenges/daily-challenges/previous");
+}
+
+export async function getRecentGames(count = 10) {
+  return apiRequest<FeedResponse>(`/v4/feed/private?count=${count}&page=0`);
+}
+
+export async function getGameDetails(token: string) {
+  return apiRequest(`/v3/games/${token}`);
+}
+
+export async function getChallengeDetails(token: string) {
+  return apiRequest(`/v3/challenges/${token}`);
 }

@@ -16,8 +16,8 @@
   "commands": [
     {
       "name": "get-profile",
-      "title": "get profile",
-      "subtitle": "Check your geoguesser stats",
+      "title": "Get your Profile",
+      "subtitle": "Check your personal geoguesser stats",
       "description": "Show you your current profile including stats",
       "mode": "view"
     },
@@ -25,7 +25,14 @@
       "name": "daily-challenge",
       "title": "Daily Challenge",
       "subtitle": "View today's daily challenge",
-      "description": "Show today's GeoGuessr daily mission",
+      "description": "Show today's GeoGuessr daily challenge",
+      "mode": "view"
+    },
+    {
+      "name": "last-games",
+      "title": "Show your recent Games",
+      "subtitle": "View your recent games",
+      "description": "Show your recent GeoGuessr game history",
       "mode": "view"
     }
   ],
