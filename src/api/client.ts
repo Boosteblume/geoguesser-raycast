@@ -1,7 +1,9 @@
+import { getPreferenceValues } from "@raycast/api";
 import { getPreferences } from "../preferences";
 import { FeedResponse } from "../types";
 
 const BASE_URL = "https://www.geoguessr.com/api";
+const GAME_SERVER_URL = "https://game-server.geoguessr.com/api";
 
 export async function apiRequest<T>(endpoint: string): Promise<T> {
   const { ncfaToken } = getPreferences();
@@ -55,4 +57,21 @@ export async function getGameDetails(token: string) {
 
 export async function getChallengeDetails(token: string) {
   return apiRequest(`/v3/challenges/${token}`);
+}
+
+export async function getDuelDetails(gameId: string) {
+  const { ncfaToken } = getPreferenceValues<Preferences>();
+
+  const response = await fetch(`${GAME_SERVER_URL}/duels/${gameId}`, {
+    headers: {
+      Cookie: `_ncfa=${ncfaToken}`,
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`API Error: ${response.status} ${response.statusText}`);
+  }
+
+  return response.json();
 }

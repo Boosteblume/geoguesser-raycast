@@ -1,7 +1,8 @@
 import { List, ActionPanel, Action, Icon, Color, Detail } from "@raycast/api";
 import { useEffect, useState } from "react";
-import { getRecentGames, getGameDetails, getChallengeDetails } from "./api/client";
-import { FeedEntry, DailyChallengePayload, StreakPayload, DuelPayload, GameDetails } from "./types";
+import { getRecentGames, getGameDetails, getChallengeDetails, getDuelDetails } from "./api/client";
+import { FeedEntry, DailyChallengePayload, StreakPayload, DuelPayload, DuelDetails } from "./types";
+import { getPlonkItUrl } from "./utils";
 
 interface ParsedGame {
   type: "daily" | "streak" | "duel" | "unknown";
@@ -63,7 +64,7 @@ export default function LastGamesCommand() {
 }
 
 function GameDetailView({ game }: { game: ParsedGame }) {
-  const [details, setDetails] = useState<GameDetails | null>(null);
+  const [details, setDetails] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -71,8 +72,10 @@ function GameDetailView({ game }: { game: ParsedGame }) {
     async function fetchDetails() {
       try {
         let data;
-        if (game.type === "daily" || game.type === "unknown") {
-          // For challenges, try challenge endpoint first, fallback to game endpoint
+
+        if (game.type === "duel") {
+          data = await getDuelDetails(game.token);
+        } else if (game.type === "daily" || game.type === "unknown") {
           try {
             data = await getChallengeDetails(game.token);
           } catch {
@@ -81,6 +84,7 @@ function GameDetailView({ game }: { game: ParsedGame }) {
         } else {
           data = await getGameDetails(game.token);
         }
+
         setDetails(data);
       } catch (err) {
         setError("Failed to load game details");
@@ -101,6 +105,12 @@ function GameDetailView({ game }: { game: ParsedGame }) {
     return <Detail isLoading={isLoading} markdown="# Loading game details..." />;
   }
 
+  // Render duel details differently
+  if (game.type === "duel") {
+    return <DuelDetailView game={game} details={details} />;
+  }
+
+  // Regular game details (existing code)
   const totalScore = details.player?.totalScore?.amount || game.points || 0;
   const guesses = details.player?.guesses || [];
   const rounds = details.rounds || [];
@@ -113,7 +123,7 @@ function GameDetailView({ game }: { game: ParsedGame }) {
 ---
 
 ## 🎯 Final Score
-**${totalScore.toLocaleString("de-DE")} points** ${details.player?.totalScore?.percentage ? `(${Math.round(details.player.totalScore.percentage)}%)` : ""}
+**${totalScore.toLocaleString("de-DE")} points**
 
 ## 📍 Rounds
 
@@ -131,22 +141,11 @@ ${rounds
     return `### Round ${idx + 1}
 - **Score:** ${guess.roundScore?.amount?.toLocaleString("de-DE") || 0} pts
 - **Distance:** ${distance}
-- **Time:** ${guess.time}s ${guess.timedOut ? "⏱️ (Timed out)" : ""}
+- **Time:** ${guess.time}s
 - **Location:** [${round.lat.toFixed(4)}, ${round.lng.toFixed(4)}](https://www.google.com/maps?q=${round.lat},${round.lng})
 - **Your Guess:** [${guess.lat.toFixed(4)}, ${guess.lng.toFixed(4)}](https://www.google.com/maps?q=${guess.lat},${guess.lng})`;
   })
   .join("\n\n")}
-
----
-
-## ⚙️ Game Settings
-- **Mode:** ${details.mode || "Standard"}
-- **Time Limit:** ${details.timeLimit ? `${details.timeLimit}s` : "No limit"}
-- **Moving:** ${details.forbidMoving ? "❌ Forbidden" : "✅ Allowed"}
-- **Zooming:** ${details.forbidZooming ? "❌ Forbidden" : "✅ Allowed"}
-- **Rotating:** ${details.forbidRotating ? "❌ Forbidden" : "✅ Allowed"}
-
-**Played:** ${new Date(details.created).toLocaleString("de-DE")}
   `;
 
   return (
@@ -156,41 +155,171 @@ ${rounds
       metadata={
         <Detail.Metadata>
           <Detail.Metadata.Label title="Total Score" text={`${totalScore.toLocaleString("de-DE")} pts`} icon="🎯" />
-          <Detail.Metadata.Label title="Map" text={details.mapName || details.map?.name || "—"} icon="🗺️" />
-          <Detail.Metadata.Label title="Rounds" text={`${rounds.length}`} icon="📍" />
-
-          <Detail.Metadata.Separator />
-
           {guesses.map((guess, idx) => (
             <Detail.Metadata.Label
               key={idx}
               title={`Round ${idx + 1}`}
               text={`${guess.roundScore?.amount?.toLocaleString("de-DE") || 0} pts`}
-              icon={guess.roundScore?.percentage && guess.roundScore.percentage > 0.8 ? "🌟" : "📌"}
             />
           ))}
-
-          <Detail.Metadata.Separator />
-
-          <Detail.Metadata.Label
-            title="Played"
-            text={new Date(details.created).toLocaleDateString("de-DE")}
-            icon="📅"
-          />
-
-          <Detail.Metadata.Separator />
-
-          <Detail.Metadata.Link title="View in Browser" target={game.url} text="Open Game" />
         </Detail.Metadata>
       }
       actions={
         <ActionPanel>
-          <Action.OpenInBrowser title="Open in Browser" url={game.url} />
-          <Action.CopyToClipboard
-            title="Copy Game Token"
-            content={game.token}
-            shortcut={{ modifiers: ["cmd", "shift"], key: "c" }}
+          <ActionPanel.Section title="Game">
+            <Action.OpenInBrowser title="Open in Browser" url={game.url} />
+          </ActionPanel.Section>
+
+          {rounds.some((r) => r.countryCode) && (
+            <ActionPanel.Section title="Practice on Plonk It">
+              {rounds.map((round, idx) => {
+                if (!round.countryCode) return null;
+                const plonkItUrl = getPlonkItUrl(round.countryCode);
+                if (!plonkItUrl) return null;
+
+                return (
+                  <Action.OpenInBrowser
+                    key={idx}
+                    title={`Round ${idx + 1}: ${round.countryCode.toUpperCase()}`}
+                    url={plonkItUrl}
+                    icon={Icon.Globe}
+                    shortcut={{ modifiers: ["cmd"], key: `${idx + 1}` }}
+                  />
+                );
+              })}
+            </ActionPanel.Section>
+          )}
+        </ActionPanel>
+      }
+    />
+  );
+}
+
+function DuelDetailView({ game, details }: { game: ParsedGame; details: DuelDetails }) {
+  const myTeam = details.teams.find((team) => team.players.some((player) => player.countryCode === "de"));
+  const enemyTeam = details.teams.find((team) => team.id !== myTeam?.id);
+
+  const didWin = details.result.winningTeamId === myTeam?.id;
+  const isDraw = details.result.isDraw;
+
+  const markdown = `
+# ⚔️ Team Duel ${isDraw ? "DRAW" : didWin ? "VICTORY!" : "DEFEAT"}
+
+**${details.options.map.name}**
+
+---
+
+## 📊 Final Result
+
+${didWin ? "🏆 **YOU WON!**" : isDraw ? "🤝 **DRAW!**" : "💀 **YOU LOST**"}
+
+### Team ${myTeam?.name.toUpperCase()}  ${didWin ? "🏆" : ""}
+- **Health:** ${myTeam?.health || 0} / ${details.options.initialHealth}
+- **Players:** ${myTeam?.players.length || 0}
+- **Multiplier:** ${myTeam?.currentMultiplier}x
+
+### Team ${enemyTeam?.name.toUpperCase()}
+- **Health:** ${enemyTeam?.health || 0} / ${details.options.initialHealth}
+- **Players:** ${enemyTeam?.players.length || 0}
+- **Multiplier:** ${enemyTeam?.currentMultiplier}x
+
+---
+
+## 📍 Round Results
+
+${myTeam?.roundResults
+  .map((round) => {
+    const location = details.rounds.find((r) => r.roundNumber === round.roundNumber);
+    const distance =
+      round.bestGuess.distance > 1000
+        ? `${Math.round(round.bestGuess.distance / 1000)} km`
+        : `${Math.round(round.bestGuess.distance)} m`;
+
+    return `### Round ${round.roundNumber} ${location?.panorama.countryCode.toUpperCase() || ""}
+- **Score:** ${round.score.toLocaleString("de-DE")} pts
+- **Distance:** ${distance}
+- **Damage Dealt:** ${round.damageDealt}
+- **Multiplier:** ${round.multiplier}x
+- **Health:** ${round.healthBefore} → ${round.healthAfter}
+- **Location:** [${location?.panorama.lat.toFixed(4)}, ${location?.panorama.lng.toFixed(4)}](https://www.google.com/maps?q=${location?.panorama.lat},${location?.panorama.lng})`;
+  })
+  .join("\n\n")}
+
+---
+
+## ⚙️ Game Settings
+- **Mode:** ${details.options.competitiveGameMode || "Team Duels"}
+- **Round Time:** ${details.options.roundTime}s
+- **Moving:** ${details.movementOptions.forbidMoving ? "❌" : "✅"}
+- **Zooming:** ${details.movementOptions.forbidZooming ? "❌" : "✅"}
+- **Rotating:** ${details.movementOptions.forbidRotating ? "❌" : "✅"}
+  `;
+
+  const myPlayer = myTeam?.players[0];
+  const ratingChange = myPlayer?.progressChange?.rankedTeamDuelsProgress;
+
+  return (
+    <Detail
+      markdown={markdown}
+      metadata={
+        <Detail.Metadata>
+          <Detail.Metadata.Label
+            title="Result"
+            text={isDraw ? "Draw" : didWin ? "Victory" : "Defeat"}
+            icon={isDraw ? "🤝" : didWin ? "🏆" : "💀"}
           />
+
+          <Detail.Metadata.Separator />
+
+          <Detail.Metadata.Label title="Your Team" text={myTeam?.name.toUpperCase() || "—"} icon="👥" />
+          <Detail.Metadata.Label
+            title="Health"
+            text={`${myTeam?.health || 0} / ${details.options.initialHealth}`}
+            icon="❤️"
+          />
+          <Detail.Metadata.Label title="Multiplier" text={`${myTeam?.currentMultiplier || 1}x`} icon="⚡" />
+
+          <Detail.Metadata.Separator />
+
+          {ratingChange && (
+            <>
+              <Detail.Metadata.Label
+                title="Rating Change"
+                text={`${ratingChange.ratingBefore} → ${ratingChange.ratingAfter} (${ratingChange.ratingAfter >= ratingChange.ratingBefore ? "+" : ""}${ratingChange.ratingAfter - ratingChange.ratingBefore})`}
+                icon="📈"
+              />
+              <Detail.Metadata.Label title="Win Streak" text={`${ratingChange.winStreak}`} icon="🔥" />
+              <Detail.Metadata.Separator />
+            </>
+          )}
+
+          <Detail.Metadata.Label title="Rounds" text={`${details.currentRoundNumber}`} icon="📍" />
+          <Detail.Metadata.Label title="Map" text={details.options.map.name} icon="🗺️" />
+        </Detail.Metadata>
+      }
+      actions={
+        <ActionPanel>
+          <ActionPanel.Section title="Game">
+            <Action.OpenInBrowser title="Open in Browser" url={game.url} />
+            <Action.CopyToClipboard title="Copy Game ID" content={game.token} />
+          </ActionPanel.Section>
+
+          <ActionPanel.Section title="Practice on Plonk It">
+            {details.rounds.map((round) => {
+              const plonkItUrl = getPlonkItUrl(round.panorama.countryCode);
+              if (!plonkItUrl) return null;
+
+              return (
+                <Action.OpenInBrowser
+                  key={round.roundNumber}
+                  title={`Round ${round.roundNumber}: ${round.panorama.countryCode.toUpperCase()}`}
+                  url={plonkItUrl}
+                  icon={Icon.Globe}
+                  shortcut={{ modifiers: ["cmd"], key: `${round.roundNumber}` }}
+                />
+              );
+            })}
+          </ActionPanel.Section>
         </ActionPanel>
       }
     />

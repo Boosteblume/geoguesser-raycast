@@ -230,6 +230,7 @@ export interface GameRound {
   heading: number;
   pitch: number;
   zoom: number;
+  countryCode?: string;
 }
 
 export interface GameGuess {
@@ -247,4 +248,109 @@ export interface GameGuess {
   time: number;
   timedOut: boolean;
   timedOutWithGuess: boolean;
+}
+
+export interface StreakPayload {
+  type: number;
+  time: string;
+  payload: {
+    mapSlug: string;
+    points: number;
+    gameToken: string;
+    gameMode: string;
+  };
+}
+
+export interface DuelPayload {
+  gameId: string;
+  gameMode: string;
+  competitiveGameMode: string;
+}
+
+export interface DuelDetails {
+  id: string;
+  teams: DuelTeam[];
+  rounds: DuelRound[];
+  currentRoundNumber: number;
+  status: string;
+  result: {
+    isDraw: boolean;
+    winningTeamId: string;
+    winnerStyle: string;
+  };
+  options: {
+    initialHealth: number;
+    roundTime: number;
+    movementOptions: {
+      forbidMoving: boolean;
+      forbidZooming: boolean;
+      forbidRotating: boolean;
+    };
+    map: {
+      name: string;
+      slug: string;
+    };
+    isTeamDuels: boolean;
+    competitiveGameMode: string;
+  };
+  movementOptions: {
+    forbidMoving: boolean;
+    forbidZooming: boolean;
+    forbidRotating: boolean;
+  };
+}
+
+export interface DuelTeam {
+  id: string;
+  name: string;
+  health: number;
+  players: DuelPlayer[];
+  roundResults: DuelRoundResult[];
+  isMultiplierActive: boolean;
+  currentMultiplier: number;
+}
+
+export interface DuelPlayer {
+  playerId: string;
+  guesses: DuelGuess[];
+  rating: number;
+  countryCode: string;
+  progressChange: {
+    rankedTeamDuelsProgress: {
+      ratingBefore: number;
+      ratingAfter: number;
+      winStreak: number;
+    };
+  };
+}
+
+export interface DuelGuess {
+  roundNumber: number;
+  lat: number;
+  lng: number;
+  distance: number;
+  created: string;
+  isTeamsBestGuessOnRound: boolean;
+  score: number;
+}
+
+export interface DuelRoundResult {
+  roundNumber: number;
+  score: number;
+  healthBefore: number;
+  healthAfter: number;
+  bestGuess: DuelGuess;
+  damageDealt: number;
+  multiplier: number;
+}
+
+export interface DuelRound {
+  roundNumber: number;
+  panorama: {
+    panoId: string;
+    lat: number;
+    lng: number;
+    countryCode: string;
+  };
+  multiplier: number;
 }
