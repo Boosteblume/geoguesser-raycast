@@ -3,7 +3,7 @@
   "name": "geoguesser",
   "title": "Geoguesser",
   "description": "Allow you to check your profile, ranking and show you the current daily mission",
-  "icon": "assets/gg-icon.png",
+  "icon": "gg-icon.png",
   "author": "boosteblume",
   "platforms": [
     "macOS",
