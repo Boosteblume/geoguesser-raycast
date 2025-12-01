@@ -1,7 +1,7 @@
 import { List, ActionPanel, Action, Icon, Color, Detail } from "@raycast/api";
 import { useEffect, useState } from "react";
 import { getRecentGames, getGameDetails, getChallengeDetails, getDuelDetails } from "./api/client";
-import { FeedEntry, DailyChallengePayload, StreakPayload, DuelPayload, DuelDetails } from "./types";
+import { FeedEntry, DailyChallengePayload, StreakPayload, DuelPayload, DuelDetails, GameDetails } from "./types";
 import { getPlonkItUrl } from "./utils";
 
 interface ParsedGame {
@@ -64,7 +64,7 @@ export default function LastGamesCommand() {
 }
 
 function GameDetailView({ game }: { game: ParsedGame }) {
-  const [details, setDetails] = useState<any>(null);
+  const [details, setDetails] = useState<GameDetails | DuelDetails | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -105,12 +105,11 @@ function GameDetailView({ game }: { game: ParsedGame }) {
     return <Detail isLoading={isLoading} markdown="# Loading game details..." />;
   }
 
-  // Render duel details differently
   if (game.type === "duel") {
     return <DuelDetailView game={game} details={details} />;
   }
 
-  // Regular game details (existing code)
+  // Regular game details
   const totalScore = details.player?.totalScore?.amount || game.points || 0;
   const guesses = details.player?.guesses || [];
   const rounds = details.rounds || [];

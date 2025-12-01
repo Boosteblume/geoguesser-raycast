@@ -1,19 +1,3 @@
-export interface ProfileResponse {
-  user: User;
-  playingRestriction: PlayingRestriction;
-  email: string;
-  isEmailChangeable: boolean;
-  isEmailVerified: boolean;
-  emailNotificationSettings: EmailNotificationSettings;
-  isBanned: boolean;
-  chatBan: boolean;
-  distanceUnit: number;
-  dateFormat: number;
-  hideCustomAvatars: boolean;
-  shareActivities: boolean;
-  deviceToken: string;
-}
-
 export interface User {
   nick: string;
   created: string;
@@ -49,6 +33,103 @@ export interface User {
   isAppAnonymous: boolean;
 }
 
+export interface UserProgress {
+  xp: number;
+  level: number;
+  levelXp: number;
+  nextLevel: number;
+  nextLevelXp: number;
+  title: Title;
+  competitionMedals: Progress;
+}
+
+export interface ProfileResponse {
+  user: User;
+  playingRestriction: PlayingRestriction;
+  email: string;
+  isEmailChangeable: boolean;
+  isEmailVerified: boolean;
+  emailNotificationSettings: EmailNotificationSettings;
+  isBanned: boolean;
+  chatBan: boolean;
+  distanceUnit: number;
+  dateFormat: number;
+  hideCustomAvatars: boolean;
+  shareActivities: boolean;
+  deviceToken: string;
+}
+
+export interface StatsResponse {
+  gamesPlayed: number;
+  roundsPlayed: number;
+  maxGameScore: ScoreStats;
+  averageGameScore: ScoreStats;
+  maxRoundScore: ScoreStats;
+  streakGamesPlayed: number;
+  closestDistance: DistanceStats;
+  averageDistance: DistanceStats;
+  averageTime: string;
+  timedOutGuesses: number;
+  battleRoyaleStats: BattleRoyaleStat[];
+  dailyChallengeStreak: number;
+  dailyChallengeCurrentStreak: number;
+  dailyChallengesRolling7Days: DailyChallengeDay[];
+  dailyChallengeMedal: number;
+  streakMedals: StreakMedal[];
+  streakRecords: StreakRecord[];
+}
+
+export interface ScoreStats {
+  amount: string;
+  unit: string;
+  percentage: number;
+}
+
+export interface DistanceStats {
+  meters: {
+    amount: string;
+    unit: string;
+  };
+  miles: {
+    amount: string;
+    unit: string;
+  };
+}
+
+export interface BattleRoyaleStat {
+  key: string;
+  value: {
+    gamesPlayed: number;
+    wins: number;
+    averagePosition: number;
+  };
+}
+
+export interface DailyChallengeDay {
+  date: string;
+  challengeToken: string;
+  totalScore: number;
+  bestRoundScore: number;
+  totalTime: number;
+  longestTime: number;
+  shortestTime: number;
+  closestDistance: number;
+  totalDistance: number;
+}
+
+export interface StreakMedal {
+  key: string;
+  value: number;
+}
+
+export interface StreakRecord {
+  key: string;
+  value: {
+    maxStreak: number;
+    maxStreakDate: string;
+  };
+}
+
 export interface Pin {
   url: string;
   anchor: string;
@@ -65,16 +146,6 @@ export interface Progress {
   silver: number;
   gold: number;
   platinum: number;
-}
-
-export interface UserProgress {
-  xp: number;
-  level: number;
-  levelXp: number;
-  nextLevel: number;
-  nextLevelXp: number;
-  title: Title;
-  competitionMedals: Progress;
 }
 
 export interface Title {
@@ -133,8 +204,8 @@ export interface DailyChallengeResponse {
     avatarImage: string;
   };
   pickedWinner: boolean;
-  friends: any;
-  country: any[];
+  friends: unknown;
+  country: unknown[];
 }
 
 export interface LeaderboardEntry {

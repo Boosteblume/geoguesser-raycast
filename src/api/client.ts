@@ -1,6 +1,6 @@
 import { getPreferenceValues } from "@raycast/api";
 import { getPreferences } from "../preferences";
-import { FeedResponse } from "../types";
+import { StatsResponse, FeedResponse } from "../types";
 
 const BASE_URL = "https://www.geoguessr.com/api";
 const GAME_SERVER_URL = "https://game-server.geoguessr.com/api";
@@ -28,7 +28,7 @@ export async function getProfile() {
 }
 
 export async function getProfileStats() {
-  return apiRequest("/v3/profiles/stats");
+  return apiRequest<StatsResponse>("/v3/profiles/stats");
 }
 
 export async function getDailyChallenge() {

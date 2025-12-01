@@ -1,11 +1,11 @@
 import { Detail, ActionPanel, Action } from "@raycast/api";
 import { useEffect, useState } from "react";
 import { getProfile, getProfileStats } from "./api/client";
-import { ProfileResponse } from "./types";
+import { ProfileResponse, StatsResponse } from "./types";
 
 export default function ViewProfile() {
   const [profile, setProfile] = useState<ProfileResponse | null>(null);
-  const [stats, setStats] = useState<any | null>(null);
+  const [stats, setStats] = useState<StatsResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
