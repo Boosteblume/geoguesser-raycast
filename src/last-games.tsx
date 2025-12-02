@@ -149,7 +149,7 @@ ${rounds
       : "—";
 
     return `### Round ${idx + 1}
-- **Score:** ${formatNumber(guess.roundScore?.amount?) || 0} pts
+- **Score:** ${formatNumber(guess.roundScore?.amount || 0)} pts
 - **Distance:** ${distance}
 - **Time:** ${guess.time}s
 - **Location:** [${round.lat.toFixed(4)}, ${round.lng.toFixed(4)}](https://www.google.com/maps?q=${round.lat},${round.lng})

@@ -9,7 +9,9 @@
 
 type ExtensionPreferences = {
   /** NCFA Token - Your GeoGuessr _ncfa cookie value (valid for 1 year) */
-  "ncfaToken": string
+  "ncfaToken": string,
+  /** Number & Date Format - Choose your preferred locale for formatting numbers and dates */
+  "locale": "de-DE" | "en-US" | "en-GB" | "fr-FR" | "es-ES" | "it-IT" | "pt-BR" | "nl-NL" | "sv-SE" | "nb-NO" | "da-DK" | "fi-FI"
 }
 
 /** Preferences accessible in all the extension's commands */
