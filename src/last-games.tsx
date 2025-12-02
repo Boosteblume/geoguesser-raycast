@@ -217,7 +217,7 @@ function DuelDetailView({ game, details }: { game: ParsedGame; details: DuelDeta
   const isDraw = details.result.isDraw;
 
   const markdown = `
-# ⚔️ Team Duel ${isDraw ? "DRAW" : didWin ? "VICTORY!" : "DEFEAT"}
+# ⚔️ Duel ${isDraw ? "DRAW" : didWin ? "VICTORY!" : "DEFEAT"}
 
 **${details.options.map.name}**
 

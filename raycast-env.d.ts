@@ -10,6 +10,8 @@
 type ExtensionPreferences = {
   /** NCFA Token - Your GeoGuessr _ncfa cookie value (valid for 1 year) */
   "ncfaToken": string,
+  /** Your Country Code - Your 2-letter country code (e.g., DE, US, FR) */
+  "countryCode": string,
   /** Number & Date Format - Choose your preferred locale for formatting numbers and dates */
   "locale": "de-DE" | "en-US" | "en-GB" | "fr-FR" | "es-ES" | "it-IT" | "pt-BR" | "nl-NL" | "sv-SE" | "nb-NO" | "da-DK" | "fi-FI"
 }
