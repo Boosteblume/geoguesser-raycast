@@ -11,7 +11,7 @@ import {
   GameGuess,
   GameRound,
 } from "./types";
-import { formatDate, formatNumber, getPlonkItUrl } from "./utils";
+import { formatNumber, getPlonkItUrl } from "./utils";
 
 interface ParsedGame {
   type: "daily" | "streak" | "duel" | "unknown";
